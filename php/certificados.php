@@ -1,0 +1,148 @@
+<?php
+include("proteger.php");
+
+if($plan != "Premium"){
+    echo "
+    <script>
+        alert('This content is exclusive to Premium users.');
+        window.location.href='planes.php';
+    </script>
+    ";
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/Certification.css">
+
+    
+<base target="_blank">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-badge">Koko´s talk Certification</div>
+            <h1>Get your certificate right now</h1>
+            <p class="subtitle">Answer these questions and get certified in Lessa</p>
+            <div class="progress-global">
+                <div class="progress-global-inner" id="globalProgress">0%</div>
+            </div>
+        </div>
+    </header>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<div class="container">
+    <!-- ESTADÍSTICAS -->
+    <div class="stats-section fade-in-up">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-hands"></i>
+            </div>
+            <div class="stat-value" id="statWords">0</div>
+            <div class="stat-label">Learned Signs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-pencil-alt"></i>
+            </div>
+            <div class="stat-value" id="statExercises">0</div>
+            <div class="stat-label">Exercises Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-value" id="statLevel">Not Started</div>
+            <div class="stat-label">Current Level</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="stat-value" id="statAccuracy">0%</div>
+            <div class="stat-label">Accuracy</div>
+        </div>
+    </div>
+</div>
+
+        <!-- NIVELES -->
+        <div class="section-title fade-in-up">
+            Lessa certification Levels
+        </div>
+        <div class="levels-grid" id="levelsContainer"></div>
+
+        <!-- PANEL DE EXAMEN -->
+        <div class="exam-panel" id="examPanel">
+            <div class="exam-header">
+                <h2 id="examTitle">Level evaluation</h2>
+                <div class="exam-info">
+                    <div class="exam-score-box">
+                        <span>⭐</span>
+                        <span id="examScore">0 pts</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exam-progress-bar">
+                <div class="exam-progress-fill" id="examProgressFill"></div>
+            </div>
+            <div class="exam-content" id="examContent"></div>
+            <div class="exam-footer">
+                <button class="btn-abandon" onclick="abandonExam()">← Leave evaluation </button>
+                <div id="examNav"></div>
+            </div>
+        </div>
+
+        <!-- CERTIFICADO -->
+        <div class="section-title fade-in-up" id="certTitleSection" style="display:none;">
+           
+            Your LESSA Certificate
+        </div>
+        <div class="certificate-section fade-in-up" id="certSection" style="display:none;">
+            <div class="certificate-preview">
+                <div class="certificate-inner">
+                    <div class="cert-title">Achievement Certificate</div>
+                    <div class="cert-subtitle">Lengua de Señas Salvadoreña (LESSA)</div>
+                    <div style="font-size:0.95rem;color:var(--gris-claro);margin-bottom:8px;"> Is awarded to</div>
+                    <div class="cert-name" id="certName"> Your name</div>
+                    <div class="cert-level" id="certLevelText">Level: --</div>
+                    <div class="cert-date" id="certDate">Date: --</div>
+                    <div class="cert-seal"><img src="img/certificacion/Koko.png.png" alt="Logo"></div>
+                </div>
+                <div class="cert-actions">
+                    <input type="text" class="name-input" id="userNameInput" placeholder="Escribe tu nombre completo..." maxlength="35">
+                    <button class="btn-download" id="downloadBtn" onclick="downloadCertificate()">
+                        <span>Download</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">🎉</div>
+            <div class="modal-title" id="modalTitle">¡Congratulations!</div>
+            <div class="modal-text" id="modalText">You have completed the level!</div>
+            <div class="modal-score" id="modalScore">80%</div>
+            <div class="modal-stats" id="modalStats"></div>
+            <button class="modal-close" id="modalBtn" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+
+    <!-- CONFETTI -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <script src="JS/certification.js"></script>
+</body>
+</html>
+```

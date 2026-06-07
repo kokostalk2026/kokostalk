@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Koko's Talk - AI Practice | Salvadoran Sign Language</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/practicaconia.css">
+        <link rel="icon" type="image/png" href="img/logo.png">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        .status-overlay {
+            position:absolute; top:16px; left:50%; transform:translateX(-50%);
+            z-index:10; min-width:280px; max-width:90%;
+            border-radius:16px; padding:12px 24px;
+            text-align:center; font-weight:600; font-size:16px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.3);
+            backdrop-filter:blur(8px); transition:all 0.3s ease;
+        }
+        .status-overlay.waiting  { background-color:rgba(255,255,255,0.95); color:#666;  border:2px solid #e5e7eb; }
+        .status-overlay.correct  { background-color:rgba(34,197,94,0.95);  color:white; border:2px solid #22c55e; }
+        .status-overlay.incorrect{ background-color:rgba(239,68,68,0.95);  color:white; border:2px solid #ef4444; }
+        #accuracyDisplay { display:none !important; }
+        .orientation-debug {
+            position:absolute; bottom:10px; left:10px;
+            background:rgba(0,0,0,0.7); color:white;
+            padding:4px 8px; border-radius:4px;
+            font-size:10px; font-family:monospace; z-index:10; pointer-events:none;
+        }
+        .btn-quick.active {
+    background: #f59e0b;   /* naranja igual que el hover */
+    color: #fff;
+    transform: scale(1.05); /* opcional, si tu hover también lo usa */
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); /* opcional */
+}
+.return-btn {
+    position: absolute;
+    top: 20px;      /* distancia desde arriba - ajusta según prefieras */
+    left: 20px;     /* distancia desde la izquierda */
+    z-index: 1000;  /* para que quede por encima del resto del contenido */
+    /* Opcional: mejora visual */
+    background-color: #fff;
+    padding: 8px 12px;
+    border-radius: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+    </style>
+</head>
+
+<body>
+    <a href="diccionario.html" class="return-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span>return</span>
+    </a>
+
+    <section id="dictionary" class="section">
+        <div class="main-container">
+            <div class="shape-left"></div>
+            <div class="shape-right"></div>
+            <div class="shape-bottom"></div>
+
+            <h1 class="main-title">AI Practice<br><span class="highlight">Learn each letter</span></h1>
+            <p style="color:#666;margin-bottom:30px;max-width:600px;margin-left:auto;margin-right:auto;font-size:18px;">
+                Activate your camera, select a letter and show the sign. The artificial intelligence will analyze your hand in real time.
+            </p>
+
+            <div class="grid-3" style="align-items:start;">
+                <div class="flex flex-col gap-4">
+                    <div class="game-card">
+                        <h3 style="color:#3b4cca;margin-bottom:20px;font-size:24px;">
+                            <i class="fas fa-hand-point-up" style="color:#f59e0b;margin-right:10px;"></i>Select a Letter
+                        </h3>
+                        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px;" id="practiceQuickSelect"></div>
+                        <select id="practiceSelect" onchange="setPracticeLetter(this.value)">
+                            <option value="">Select letter...</option>
+                        </select>
+                    </div>
+                    <div class="game-card" style="border-color:#3b4cca;">
+                        <h4 style="color:#3b4cca;margin-bottom:15px;">Target Letter</h4>
+                        <div style="text-align:center;">
+                            <span id="targetLetter" style="font-size:48px;font-weight:800;color:#f59e0b;">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4" style="grid-column:span 2;">
+                    <div class="camera-container" style="height:400px;position:relative;">
+                        <video id="practiceVideo" style="width:100%;height:100%;object-fit:cover;" playsinline></video>
+                        <canvas id="practiceCanvas" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+                        <div id="statusOverlay" class="status-overlay waiting">
+                            <p style="margin:0;">Select a letter and activate the camera to start</p>
+                        </div>
+                        <div id="cameraOverlay" class="camera-overlay">
+                            <i class="fas fa-camera" style="font-size:64px;color:#f59e0b;margin-bottom:20px;"></i>
+                            <h3 style="font-size:28px;margin-bottom:10px;">Camera Off</h3>
+                            <button onclick="startPracticeCamera()" class="btn-primary">
+                                <i class="fas fa-play"></i> Start Camera
+                            </button>
+                        </div>
+                        <div id="accuracyDisplay">Accuracy: <span id="accuracyValue">0%</span></div>
+                        <div id="orientationDebug" class="orientation-debug"></div>
+                    </div>
+
+                    <div id="letterGuide" class="game-card hidden-section">
+                        <div style="display:flex;gap:30px;align-items:center;flex-wrap:wrap;">
+                            <div id="guideLetter">A</div>
+                            <div style="flex:1;">
+                                <h4 style="color:#3b4cca;margin-bottom:10px;font-size:20px;">How to make this sign:</h4>
+                                <p id="guideDescription" style="color:#666;line-height:1.6;"></p>
+                                <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+                                    <span id="guideLevel"></span>
+                                    <span id="guideExample"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="wave-top">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h4>Koko's Talk</h4>
+                    <p>Transforming lives through inclusive communication. Learn LESSA dynamically and professionally.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">LESSA Guide</a></li>
+                        <li><a href="#">Community</a></li>
+                        <li><a href="#">Help Center</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-envelope"></i> info@kokostalk.com</a></li>
+                        <li><a href="#"><i class="fas fa-phone"></i> +503 2222-3333</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> San Salvador, El Salvador</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2026 Koko's Talk Group. All rights reserved.</p></div>
+        </div>
+    </footer>
+
+<script src="JS/practicaconia.js"></script>
+</body>
+</html>

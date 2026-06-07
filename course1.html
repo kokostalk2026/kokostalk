@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Koko's Talk - Health Sciences & Wellness Studies</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="img/logo.png" type="image/png">
+    
+    <link rel="stylesheet" href="css/course.css">
+    
+  
+</head>
+<body>
+<!--Navbar-->
+<div class="navbar-container">
+  <nav class="navbar" id="mainNav">
+    <div class="navbar-inner">
+      <div class="brand">
+        <img src="img/invitacion/logo.png" alt="Logo">
+        <div class="brand-text">Koko´s Talk</div>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="lessonglobal.html">Lessons</a></li>
+        <li><a href="php/cursosglobal.php"  class="active">Courses</a></li>
+        <li><a href="php/diccionario.php">Dictionary</a></li>
+        <li><a href="about.html">About Us</a></li>
+      </ul>
+      <div class="nav-right">
+        <div class="email-area">
+          <a href="php/accountglobal.php" class="email-icon">
+            <img src="img/usuario.png" alt="Account">
+          </a>
+        </div>
+        <!-- Botón hamburguesa -->
+        <button class="hamburger" id="hamburger" aria-label="Abrir menú" onclick="toggleMenu()">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+    <!-- Menú mobile  -->
+    <ul class="mobile-menu" id="mobileMenu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="lessonglobal.html">Lessons</a></li>
+      <li><a href="php/cursosglobal.php" class="active">Courses</a></li>
+      <li><a href="php/diccionario.php">Dictionary</a></li>
+      <li><a href="about.html">About Us</a></li>
+    </ul>
+  </nav>
+</div>
+ <script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+    document.getElementById('hamburger').classList.toggle('open');
+  }
+</script>
+
+
+<div class="container">
+    
+    <!-- Barra de lección -->
+    <div class="lesson-bar">
+        <div class="lesson-bar__info">
+            <h6 class="lesson-bar__label">Lesson 1 of 28 – Health Sciences & Wellness Studies Course</h6>
+            <h5 class="lesson-bar__title">Introduction to Health Sciences, Medical Terminology & Health Signs in LESSA</h5>
+        </div>
+        <div class="lesson-bar__actions">
+            <a href="php/cursosglobal.php"><button class="btn-view">
+                <h6>View courses</h6>
+                <i class="fas fa-book-open"></i>
+            </button></a>
+        </div>
+    </div>
+
+    <div class="course-main">
+        <div class="course-main__video">
+            <div class="video-wrapper">
+                <video id="courseVideo" controls poster="img/video-poster.jpg">
+                    <source src="videoscursos/Health.mp4" type="video/mp4">
+                    Tu navegador no soporta la reproducción de videos.
+                </video>
+            </div>
+        </div>
+
+        <div class="course-main__discussion">
+            <div class="discussion-header">
+                <div class="discussion-tabs">
+                    <span class="tab active">Comments</span>
+                </div>
+                <button class="btn-close-panel" aria-label="Close discussion panel">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="comment-list">
+                <div class="comment-item">
+                    <div class="comment-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">María Hernández</span>
+                            <span class="comment-time">2 days ago</span>
+                        </div>
+                        <p class="comment-text">What is the sign for "blood pressure" in LESSA when explaining vital signs?</p>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="comment-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">Carlos Martínez</span>
+                            <span class="comment-time">4 days ago</span>
+                        </div>
+                        <p class="comment-text">Will the course include signs for medical terms like diabetes, hypertension, and first aid?</p>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="comment-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">Ana Flores</span>
+                            <span class="comment-time">1 week ago</span>
+                        </div>
+                        <p class="comment-text">How long does it take to complete the entire Health Sciences course?</p>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="comment-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">Luis Cruz</span>
+                            <span class="comment-time">1 week ago</span>
+                        </div>
+                        <p class="comment-text">Is this course suitable for beginners with no prior knowledge of health or medical terminology?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comment-form">
+                <div class="comment-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="comment-input-wrapper">
+                    <input type="text" placeholder="Ask a question about health sciences, medical terminology, vital signs, or wellness..." class="comment-input">
+                    <button class="btn-post" aria-label="Send comment">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lesson-bottom">
+        <div class="summary-card">
+            <h3 class="card-title">
+                <i class="fas fa-file-alt"></i> Summary
+            </h3>
+            <p class="summary-text">
+                In this first video, basic signs related to Health Sciences and Wellness are taught. You will learn how to express concepts such as vital signs (blood pressure, heart rate, temperature), common symptoms (pain, fever, dizziness), medical terms (diagnosis, treatment, prescription), healthcare settings (hospital, clinic, pharmacy, emergency room), and key health professionals (doctor, nurse, paramedic, specialist) using LESSA (Salvadoran Sign Language). This video introduces fundamental vocabulary about general medicine, nutrition, mental health, first aid, and preventive care. The course promotes health literacy, patient-centered communication, and inclusive access to medical information in a clear and professional way.
+            </p>
+        </div>
+
+        <div class="question-card">
+            <div class="question-header">
+                <div class="instructor-avatar">
+                    <span class="avatar-placeholder">XG</span>
+                </div>
+                <div class="instructor-info">
+                    <h4>Xavier Gómez</h4>
+                    <span class="instructor-role">Instructor · Health Sciences & LESSA Medical Expert</span>
+                </div>
+            </div>
+            <div class="ask-instructor-wrapper">
+                <button class="btn-ask-instructor">
+                    <i class="fas fa-comment-dots"></i> Ask Xavier Gómez
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--FOOTER-->
+  <footer class="footer">
+    <div class="wave-top">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path
+          d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+          class="shape-fill"></path>
+      </svg>
+    </div>
+
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-column">
+          <h4>Koko's Talk</h4>
+          <p>Transforming lives through inclusive communication. Learn LESSA dynamically and professionally.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            
+          </div>
+        </div>
+        <div class="footer-column">
+          <h4>Resources</h4>
+          <ul>
+             <li><a href="index.html">Home</a></li>
+             <li><a href="lessonglobal.html">Lessons</a></li>
+             <li><a href="php/cursosglobal.php">Curses</a></li>
+             <li><a href="php/diccionario.php">Dictionary</a></li>
+             <li><a href="about.html">About us</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="mailto:info@kokostalk.com"><i class="fas fa-envelope"></i> info@kokostalk.com</a></li>
+            <li><a href="tel:+50322223333"><i class="fas fa-phone"></i> +503 2222-3333</a></li>
+            <li><a href="#"><i class="fas fa-map-marker-alt"></i> San Salvador, El Salvador</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Koko's Talk Group. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+<!-- CHAT FLOTANTE -->
+<div class="chat-widget" id="chatWidget">
+    <div class="chat-header">
+        <div class="chat-header-info">
+            <div class="chat-avatar">XG</div>
+            <div class="chat-header-text">
+                <h4>Xavier Gómez</h4>
+                <p>Health Sciences Instructor · Online</p>
+            </div>
+        </div>
+        <button class="chat-close" id="closeChatBtn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="message">
+            <div class="message-avatar">XG</div>
+            <div class="message-bubble">
+                Hi! I'm Xavier, your Health Sciences and Wellness instructor. How can I help you today?
+            </div>
+        </div>
+    </div>
+    <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Ask about health sciences, medical terminology, vital signs, or wellness signs...">
+        <button class="chat-send" id="sendChatBtn">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<script src="JS/course1.js"></script>
+
+</body>
+</html>
