@@ -1,7 +1,6 @@
 <?php
 session_start();
-
-$conexion = new mysqli("localhost", "root", "", "usuarios");
+require_once "conexion.php";
 
 if ($conexion->connect_error) {
     die("Error de conexión");
