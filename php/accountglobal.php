@@ -50,7 +50,7 @@ if (!isset($_SESSION['usuario'])) {
     <i class="fas fa-sign-out-alt"></i>
     <span>Log Out</span>
 </button>
-            </div>A
+            </div>
         </div>
     </div>
 </div>
