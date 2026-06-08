@@ -507,31 +507,235 @@ async function changePassword() {
     }
 }
 
-function getCompletedLessons() {
-    const possibleKeys = [
-        'completedLessons_' + currentUser.id,
-        'completedLessons_' + currentUser.username,
-        'completedLessons'
-    ];
+function normalizeCompletedLessons(rawValue) {
+    if (!rawValue) return [];
 
-    for (const key of possibleKeys) {
-        try {
-            const value = JSON.parse(localStorage.getItem(key) || '[]');
+    try {
+        const parsed = JSON.parse(rawValue);
 
-            if (Array.isArray(value) && value.length > 0) {
-                return value;
-            }
-        } catch (e) {}
+        if (Array.isArray(parsed)) {
+            return parsed;
+        }
+
+        if (parsed && Array.isArray(parsed.completedLessons)) {
+            return parsed.completedLessons;
+        }
+
+        if (parsed && Array.isArray(parsed.completed)) {
+            return parsed.completed;
+        }
+
+        if (parsed && Array.isArray(parsed.lessons)) {
+            return parsed.lessons;
+        }
+
+        if (parsed && Array.isArray(parsed.doneLessons)) {
+            return parsed.doneLessons;
+        }
+
+    } catch (e) {
+        console.warn("No se pudo leer progreso como JSON:", e);
     }
 
     return [];
 }
 
+function readProgressFromLocalStorage() {
+    /*
+        Esta función es más amplia que la anterior.
+        Lee el progreso aunque la página de Lessons lo guarde como:
+        - arreglo de lecciones completadas
+        - objeto con completedLessons
+        - objeto con basic/intermediate/advanced
+        - objeto con basicCompleted/intermediateCompleted/advancedCompleted
+        - objeto con porcentajes o conteos
+    */
+
+    const result = {
+        completedLessons: [],
+        basic: 0,
+        intermediate: 0,
+        advanced: 0,
+        totalCompleted: 0,
+        percent: 0,
+        sourceKey: ""
+    };
+
+    const keysToCheck = [
+        'lessonProgress_' + currentUser.id,
+        'completedLessons_' + currentUser.id,
+        'completedLessons_' + currentUser.username,
+        'lessonProgress_' + currentUser.username,
+        'lessonProgress_guest',
+        'kokoGame',
+        'completedLessons',
+        'progress',
+        'userProgress',
+        'lessonsProgress',
+        'kokoProgress'
+    ];
+
+    // Agrega automáticamente cualquier llave que parezca progreso
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+
+        const lower = key.toLowerCase();
+        if (
+            lower.includes('progress') ||
+            lower.includes('completed') ||
+            lower.includes('lesson') ||
+            lower.includes('koko')
+        ) {
+            if (!keysToCheck.includes(key)) {
+                keysToCheck.push(key);
+            }
+        }
+    }
+
+    for (const key of keysToCheck) {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+
+        let parsed = null;
+
+        try {
+            parsed = JSON.parse(raw);
+        } catch (e) {
+            continue;
+        }
+
+        const lessons = normalizeCompletedLessons(raw);
+
+        if (lessons.length > 0) {
+            result.completedLessons = lessons;
+            result.totalCompleted = lessons.length;
+
+            /*
+                Si las lecciones se guardan como ids, intenta clasificarlas por nombre.
+                Si se guardan como números, reparte usando el orden del curso.
+            */
+            let basic = 0;
+            let intermediate = 0;
+            let advanced = 0;
+
+            lessons.forEach((lesson, index) => {
+                const value = String(lesson).toLowerCase();
+
+                if (
+                    value.includes('basic') ||
+                    value.includes('basico') ||
+                    value.includes('abc') ||
+                    value.includes('hola') ||
+                    value.includes('nombre') ||
+                    value.includes('numeros') ||
+                    value.includes('familia') ||
+                    value.includes('tiempo1') ||
+                    value.includes('colores') ||
+                    value.includes('oraciones') ||
+                    value.includes('eval-basic')
+                ) {
+                    basic++;
+                } else if (
+                    value.includes('inter') ||
+                    value.includes('casa') ||
+                    value.includes('ciudades') ||
+                    value.includes('comida') ||
+                    value.includes('cuerpo') ||
+                    value.includes('trabajo') ||
+                    value.includes('transporte') ||
+                    value.includes('verbos') ||
+                    value.includes('tiempo2') ||
+                    value.includes('clasificadores1') ||
+                    value.includes('eval-inter')
+                ) {
+                    intermediate++;
+                } else if (
+                    value.includes('adv') ||
+                    value.includes('avanz') ||
+                    value.includes('direccionales') ||
+                    value.includes('rol') ||
+                    value.includes('modismos') ||
+                    value.includes('leyes') ||
+                    value.includes('abstractos') ||
+                    value.includes('poesia') ||
+                    value.includes('interpretacion') ||
+                    value.includes('eval-avanzada')
+                ) {
+                    advanced++;
+                } else {
+                    // Si no se reconoce, asume orden: primero 9 básicas, luego 10 intermedias, luego 9 avanzadas.
+                    if (index < 9) basic++;
+                    else if (index < 19) intermediate++;
+                    else advanced++;
+                }
+            });
+
+            result.basic = Math.min(9, basic);
+            result.intermediate = Math.min(10, intermediate);
+            result.advanced = Math.min(9, advanced);
+            result.percent = Math.min(100, Math.round((result.totalCompleted / 28) * 100));
+            result.sourceKey = key;
+
+            console.log("Progreso encontrado en:", key, result);
+            return result;
+        }
+
+        /*
+            Caso especial: el modal de progreso suele guardar conteos por nivel.
+            Ejemplos posibles:
+            { basic: 2, intermediate: 0, advanced: 0 }
+            { basicCompleted: 2, intermediateCompleted: 0, advancedCompleted: 0 }
+            { basicProgress: 2, intermediateProgress: 0, advancedProgress: 0 }
+        */
+        if (parsed && typeof parsed === 'object') {
+            const basic =
+                Number(parsed.basic ?? parsed.basicCompleted ?? parsed.basicProgress ?? parsed.basicCount ?? 0);
+
+            const intermediate =
+                Number(parsed.intermediate ?? parsed.intermediateCompleted ?? parsed.intermediateProgress ?? parsed.intermediateCount ?? parsed.interCount ?? 0);
+
+            const advanced =
+                Number(parsed.advanced ?? parsed.advancedCompleted ?? parsed.advancedProgress ?? parsed.advancedCount ?? parsed.advCount ?? 0);
+
+            const total =
+                Number(parsed.totalCompleted ?? parsed.completedCount ?? parsed.completed ?? (basic + intermediate + advanced));
+
+            const percent =
+                Number(parsed.percent ?? parsed.percentage ?? parsed.progressPercent ?? Math.round((total / 28) * 100));
+
+            if (basic > 0 || intermediate > 0 || advanced > 0 || total > 0 || percent > 0) {
+                result.basic = Math.min(9, basic);
+                result.intermediate = Math.min(10, intermediate);
+                result.advanced = Math.min(9, advanced);
+                result.totalCompleted = Math.min(28, total || (basic + intermediate + advanced));
+                result.percent = Math.min(100, percent || Math.round((result.totalCompleted / 28) * 100));
+                result.sourceKey = key;
+
+                console.log("Progreso por conteos encontrado en:", key, result);
+                return result;
+            }
+        }
+    }
+
+    console.log("No se encontró progreso guardado.");
+    return result;
+}
+
+function getCompletedLessons() {
+    return readProgressFromLocalStorage().completedLessons;
+}
+
 function updateProfileProgress() {
-    const completedLessons = getCompletedLessons();
-    const totalLessons = 29;
-    const completed = completedLessons.length;
-    const percent = Math.min(100, Math.round((completed / totalLessons) * 100));
+    const progress = readProgressFromLocalStorage();
+
+    const totalLessons = 28;
+    const completed = Math.min(28, progress.totalCompleted || progress.completedLessons.length || 0);
+    const percent = Math.min(100, progress.percent || Math.round((completed / totalLessons) * 100));
+
+    const basic = Math.min(9, progress.basic || Math.min(completed, 9));
+    const inter = Math.min(10, progress.intermediate || Math.max(0, Math.min(completed - 9, 10)));
+    const adv = Math.min(9, progress.advanced || Math.max(0, Math.min(completed - 19, 9)));
 
     const setText = (id, text) => {
         const el = document.getElementById(id);
@@ -549,10 +753,6 @@ function updateProfileProgress() {
         const circumference = 345.4;
         ring.style.strokeDashoffset = circumference - (percent / 100) * circumference;
     }
-
-    const basic = Math.min(completed, 9);
-    const inter = Math.max(0, Math.min(completed - 9, 10));
-    const adv = Math.max(0, Math.min(completed - 19, 9));
 
     setText('basicCount', basic + '/9');
     setText('interCount', inter + '/10');
@@ -581,6 +781,11 @@ function updateProfileProgress() {
         if (progressDesc) progressDesc.textContent = 'You already have a solid base. Keep practicing to unlock more progress.';
         if (motivText) motivText.textContent = 'Keep going!';
         if (levelBadge) levelBadge.textContent = 'Intermediate';
+    } else if (percent > 0) {
+        if (progressTitle) progressTitle.textContent = 'You are just starting';
+        if (progressDesc) progressDesc.textContent = 'You have already started your LESSA learning path. Keep going!';
+        if (motivText) motivText.textContent = 'Keep practicing!';
+        if (levelBadge) levelBadge.textContent = 'Beginner';
     } else {
         if (progressTitle) progressTitle.textContent = 'You are just starting';
         if (progressDesc) progressDesc.textContent = 'Every lesson brings you closer to full communication in LESSA.';
@@ -596,19 +801,25 @@ function updateProfileProgress() {
     if (doneList) doneList.innerHTML = '';
     if (pendingList) pendingList.innerHTML = '';
 
-    if (completedLessons.length === 0) {
+    if (completed === 0) {
         if (allList) allList.innerHTML = "<div style='padding:10px'>No lessons completed yet.</div>";
         if (doneList) doneList.innerHTML = "<div style='padding:10px'>No lessons completed yet.</div>";
         if (pendingList) pendingList.innerHTML = "<div style='padding:10px'>Complete your first lesson to see pending progress.</div>";
     } else {
-        completedLessons.forEach(lesson => {
-            const item = document.createElement('div');
-            item.innerHTML = '✅ ' + lesson;
-            item.style.padding = '10px';
+        if (allList) {
+            allList.innerHTML = `
+                <div style='padding:10px'>✅ Basic Level: ${basic}/9</div>
+                <div style='padding:10px'>${inter > 0 ? '✅' : '⏳'} Intermediate Level: ${inter}/10</div>
+                <div style='padding:10px'>${adv > 0 ? '✅' : '⏳'} Advanced Level: ${adv}/9</div>
+            `;
+        }
 
-            if (allList) allList.appendChild(item.cloneNode(true));
-            if (doneList) doneList.appendChild(item.cloneNode(true));
-        });
+        if (doneList) {
+            doneList.innerHTML = `
+                <div style='padding:10px'>Completed lessons: ${completed}/28</div>
+                <div style='padding:10px'>Progress source: ${progress.sourceKey || 'localStorage'}</div>
+            `;
+        }
 
         if (pendingList) {
             pendingList.innerHTML = "<div style='padding:10px'>Keep completing more lessons to increase your percentage.</div>";
