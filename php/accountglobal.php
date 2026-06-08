@@ -561,37 +561,19 @@ function readProgressFromLocalStorage() {
         sourceKey: ""
     };
 
+    /*
+        IMPORTANTE:
+        Solo se leen llaves específicas del usuario actual.
+        No se usan lessonProgress_guest, kokoGame ni completedLessons global,
+        porque eso mezcla el avance de otros usuarios.
+    */
     const keysToCheck = [
         'lessonProgress_' + currentUser.id,
         'completedLessons_' + currentUser.id,
-        'completedLessons_' + currentUser.username,
-        'lessonProgress_' + currentUser.username,
-        'lessonProgress_guest',
-        'kokoGame',
-        'completedLessons',
-        'progress',
-        'userProgress',
-        'lessonsProgress',
-        'kokoProgress'
+        'progress_' + currentUser.id,
+        'userProgress_' + currentUser.id,
+        'kokoProgress_' + currentUser.id
     ];
-
-    // Agrega automáticamente cualquier llave que parezca progreso
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (!key) continue;
-
-        const lower = key.toLowerCase();
-        if (
-            lower.includes('progress') ||
-            lower.includes('completed') ||
-            lower.includes('lesson') ||
-            lower.includes('koko')
-        ) {
-            if (!keysToCheck.includes(key)) {
-                keysToCheck.push(key);
-            }
-        }
-    }
 
     for (const key of keysToCheck) {
         const raw = localStorage.getItem(key);
@@ -718,7 +700,7 @@ function readProgressFromLocalStorage() {
         }
     }
 
-    console.log("No se encontró progreso guardado.");
+    console.log("No se encontró progreso guardado para el usuario actual:", currentUser.id);
     return result;
 }
 
