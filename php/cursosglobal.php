@@ -38,15 +38,15 @@ if($plan == "Free"){
         <div class="brand-text">Koko´s Talk</div>
       </div>
       <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="lessonglobal.html">Lessons</a></li>
-        <li><a href="php/cursosglobal.php" class="active">Courses</a></li>
-        <li><a href="php/diccionario.php">Dictionary</a></li>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../lessonglobal.html">Lessons</a></li>
+        <li><a href="cursosglobal.php" class="active">Courses</a></li>
+        <li><a href="diccionario.php">Dictionary</a></li>
         <li><a href="../about.html">About Us</a></li>
       </ul>
       <div class="nav-right">
         <div class="email-area">
-          <a href="../php/accountglobal.php" class="email-icon">
+          <a href="accountglobal.php" class="email-icon">
             <img src="../img/usuario.png" alt="Account">
           </a>
         </div>
@@ -58,10 +58,10 @@ if($plan == "Free"){
     </div>
     <!-- Menú mobile (oculto por defecto) -->
     <ul class="mobile-menu" id="mobileMenu">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="lessonglobal.html">Lessons</a></li>
-      <li><a href="php/cursosglobal.php" class="active">Courses</a></li>
-      <li><a href="php/diccionario.php">Dictionary</a></li>
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../lessonglobal.html">Lessons</a></li>
+      <li><a href="cursosglobal.php" class="active">Courses</a></li>
+      <li><a href="diccionario.php">Dictionary</a></li>
       <li><a href="../about.html">About Us</a></li>
     </ul>
   </nav>
@@ -225,8 +225,8 @@ if($plan == "Free"){
           <ul>
              <li><a href="../index.html">Home</a></li>
              <li><a href="../lessonglobal.html">Lessons</a></li>
-             <li><a href="../cursosglobal.php">Courses</a></li>
-             <li><a href="../diccionario.html">Dictionary</a></li>
+             <li><a href="cursosglobal.php">Courses</a></li>
+             <li><a href="diccionario.php">Dictionary</a></li>
              <li><a href="../about.html">About us</a></li>
           </ul>
         </div>

@@ -19,7 +19,7 @@ if($plan != "Premium"){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Certification</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/Certification.css">
+    <link rel="stylesheet" href="../css/Certification.css">
 
     
 <base target="_blank">
@@ -115,7 +115,7 @@ if($plan != "Premium"){
                     <div class="cert-name" id="certName"> Your name</div>
                     <div class="cert-level" id="certLevelText">Level: --</div>
                     <div class="cert-date" id="certDate">Date: --</div>
-                    <div class="cert-seal"><img src="img/certificacion/Koko.png.png" alt="Logo"></div>
+                    <div class="cert-seal"><img src="../img/certificacion/Koko.png.png" alt="Logo"></div>
                 </div>
                 <div class="cert-actions">
                     <input type="text" class="name-input" id="userNameInput" placeholder="Escribe tu nombre completo..." maxlength="35">
@@ -142,7 +142,6 @@ if($plan != "Premium"){
     <!-- CONFETTI -->
     <div class="confetti-container" id="confettiContainer"></div>
 
-    <script src="JS/certification.js"></script>
+    <script src="../JS/certification.js"></script>
 </body>
 </html>
-```
