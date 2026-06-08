@@ -135,15 +135,19 @@ $stmt->close();
                 </div>
             </div>
 
-            <div style="padding: 0 22px 22px;">
+            <div style="padding: 0 22px 22px; display:flex; flex-direction:column; gap:10px;">
                 <button class="save-btn" onclick="saveProfile()">
                     <i class="fas fa-save"></i> Save changes
+                </button>
+
+                <button class="save-btn" type="button" onclick="togglePasswordPanel()" style="background:#1cb0f6;">
+                    <i class="fas fa-lock"></i> Change password
                 </button>
             </div>
         </div>
 
-        <!-- Password card -->
-        <div class="card">
+        <!-- Password card hidden by default -->
+        <div class="card" id="passwordCard" style="display:none;">
             <div class="card-header">
                 <div class="icon-dot" style="background:var(--blue);">
                     <i class="fas fa-lock"></i>
@@ -168,9 +172,13 @@ $stmt->close();
                 </div>
             </div>
 
-            <div style="padding: 0 22px 22px;">
+            <div style="padding: 0 22px 22px; display:flex; flex-direction:column; gap:10px;">
                 <button class="save-btn" onclick="changePassword()">
-                    <i class="fas fa-key"></i> Change password
+                    <i class="fas fa-key"></i> Save new password
+                </button>
+
+                <button class="save-btn" type="button" onclick="togglePasswordPanel()" style="background:#6b7280;">
+                    <i class="fas fa-times"></i> Cancel
                 </button>
             </div>
         </div>
@@ -435,6 +443,22 @@ async function saveProfile() {
         }
     } catch (error) {
         showToast('Error updating profile.');
+    }
+}
+
+function togglePasswordPanel() {
+    const card = document.getElementById('passwordCard');
+
+    if (!card) return;
+
+    if (card.style.display === 'none' || card.style.display === '') {
+        card.style.display = 'block';
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+        card.style.display = 'none';
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
     }
 }
 
