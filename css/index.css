@@ -254,8 +254,10 @@ body {
 /* fondo y shapes */
 .hero-bg {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: -1;
 }
 
@@ -263,37 +265,77 @@ body {
   position: absolute;
 }
 
+/* Triángulo */
 .shape-triangle_orange {
   width: 240px;
-  top: 150px; right: 60px; left: auto;
+  top: 150px;
+  right: 60px;
   transform: scale(4.3) rotate(-180deg);
   opacity: 0.9;
 }
 
+/* Guante 1 */
 .shape-glove1 {
   width: 540px;
-  top: 30px; right: 250px;
-  transform: scale(1) rotate(0deg);
+  top: 30px;
+  right: 250px;
+  transform: scale(1);
 }
 
+/* Guante 2 */
 .shape-glove2 {
   width: 380px;
-  bottom: 150px; right: 380px;
-  transform: scale(1) rotate(0deg);
+  bottom: 150px;
+  right: 380px;
+  transform: scale(1);
 }
 
+/* Koko */
 .shape-koko {
   position: absolute;
   width: 390px;
-  top: 150px; right: 80px;
-  transform: scale(1.5) rotate(0deg);
-  /* las animaciones se definen abajo */
+  max-width: none;
+  top: 150px;
+  right: 80px;
+  transform: scale(1.5);
+
   animation:
     fadeInKoko 1s cubic-bezier(0.4, 0, 0.2, 1) forwards,
-    breathe    6s ease-in-out infinite 1.2s;
+    breathe 6s ease-in-out infinite 1.2s;
 }
 
-/* animaciones de los elementos flotantes */
+/* Responsive */
+@media (max-width: 768px) {
+
+  .shape-triangle_orange {
+    width: 240px;
+    right: -20px;
+    top: 100px;
+    transform: scale(4.3) rotate(-180deg);
+  }
+
+  .shape-glove1 {
+    width: 540px;
+    right: -120px;
+    top: 20px;
+  }
+
+  .shape-glove2 {
+    width: 380px;
+    right: -80px;
+    bottom: 50px;
+  }
+
+  .shape-koko {
+    width: 390px;
+    max-width: none;
+    right: 20px;
+    top: 120px;
+    transform: scale(1.5);
+  }
+}
+
+/* animaciones */
 @keyframes fadeInKoko {
   from {
     opacity: 0;
@@ -301,29 +343,48 @@ body {
   }
   to {
     opacity: 1;
-    transform: scale(1.5) translateX(0px);
+    transform: scale(1.5) translateX(0);
   }
 }
 
 @keyframes breathe {
-  0%, 100% { transform: scale(1.5) translateY(0px); }
-  50%      { transform: scale(1.5) translateY(-10px); }
+  0%, 100% {
+    transform: scale(1.5) translateY(0);
+  }
+  50% {
+    transform: scale(1.5) translateY(-10px);
+  }
 }
 
 @keyframes driftUp {
-  0%, 100% { transform: translateY(0px); }
-  50%      { transform: translateY(-8px); }
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 @keyframes driftDown {
-  0%, 100% { transform: scale(4.3) rotate(-180deg) translateY(0px); }
-  50%      { transform: scale(4.3) rotate(-180deg) translateY(5px); }
+  0%, 100% {
+    transform: scale(4.3) rotate(-180deg) translateY(0);
+  }
+  50% {
+    transform: scale(4.3) rotate(-180deg) translateY(5px);
+  }
 }
 
-.shape-glove1 { animation: driftUp 7s ease-in-out infinite 0.5s; }
-.shape-glove2 { animation: driftUp 8.5s ease-in-out infinite 1.5s; }
-.shape-triangle_orange { animation: driftDown 10s ease-in-out infinite; }
+.shape-glove1 {
+  animation: driftUp 7s ease-in-out infinite 0.5s;
+}
 
+.shape-glove2 {
+  animation: driftUp 8.5s ease-in-out infinite 1.5s;
+}
+
+.shape-triangle_orange {
+  animation: driftDown 10s ease-in-out infinite;
+}
 /* =============================================
    HERO 2 – la escalera y el triángulo azul
    ============================================= */

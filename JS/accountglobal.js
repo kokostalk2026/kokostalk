@@ -64,14 +64,75 @@ let profile = {
     reason: '', avatar: '🐨', streak: 0
 };
 
+function getSavedUserData() {
+    try {
+        const user = JSON.parse(localStorage.getItem('kokosCurrentUser') || 'null');
+        console.log('[Account] kokosCurrentUser', user);
+        return user;
+    } catch (e) {
+        console.error('[Account] Error parsing kokosCurrentUser', e);
+        return null;
+    }
+}
+
+function getLessonProgressKey() {
+    const user = getSavedUserData();
+    const key = user && user.id ? `lessonProgress_${user.id}` : 'lessonProgress_guest';
+    console.log('[Account] Using progress key', key);
+    return key;
+}
+
 function loadState() {
-    const saved = localStorage.getItem('kokoGame');
+    const key = getLessonProgressKey();
+    let saved = localStorage.getItem(key);
     let game = { completedLessons: [] };
-    if (saved) { try { game = JSON.parse(saved); } catch(e) {} }
+
+    console.log('[Account] loadState initial key', key, 'saved exists?', !!saved);
+
+    if (!saved && key !== 'lessonProgress_guest') {
+        saved = localStorage.getItem('lessonProgress_guest');
+        console.log('[Account] fallback to lessonProgress_guest', !!saved);
+    }
+    if (!saved) {
+        saved = localStorage.getItem('kokoGame');
+        console.log('[Account] fallback to kokoGame', !!saved);
+    }
+    if (!saved) {
+        saved = localStorage.getItem('completedLessons');
+        console.log('[Account] fallback to completedLessons', !!saved);
+    }
+
+    if (saved) {
+        console.log('[Account] raw saved progress', saved);
+        try {
+            game = JSON.parse(saved);
+            if (game && game.completedLessons && Array.isArray(game.completedLessons)) {
+                console.log('[Account] parsed saved as game object with completedLessons', game.completedLessons);
+                if (!localStorage.getItem(key)) {
+                    localStorage.setItem(key, JSON.stringify(game.completedLessons));
+                }
+                game = { completedLessons: game.completedLessons };
+            } else if (Array.isArray(game)) {
+                console.log('[Account] parsed saved as array', game);
+                if (key !== 'lessonProgress_guest') {
+                    localStorage.setItem(key, JSON.stringify(game));
+                }
+                game = { completedLessons: game };
+            } else {
+                console.warn('[Account] parsed saved progress has unexpected format', game);
+            }
+        } catch (e) {
+            console.error('[Account] Error parsing progress JSON', e);
+            game = { completedLessons: [] };
+        }
+    } else {
+        console.log('[Account] No saved lesson progress found');
+    }
 
     const savedProfile = localStorage.getItem('kokoProfile');
-    if (savedProfile) { try { profile = { ...profile, ...JSON.parse(savedProfile) }; } catch(e) {} }
+    if (savedProfile) { try { profile = { ...profile, ...JSON.parse(savedProfile) }; } catch(e) { console.error('[Account] Error parsing kokoProfile', e); } }
 
+    console.log('[Account] final completed lessons', game.completedLessons);
     return game;
 }
 
@@ -101,24 +162,33 @@ function renderHero(completed) {
     const c = completed.length;
 
     // ── FIX: mostrar nombre guardado, si no hay nombre mostrar "Mi Cuenta" ──
-    document.getElementById('heroName').textContent  = profile.name  || 'Mi Cuenta';
-    document.getElementById('heroEmail').textContent = profile.email || 'usuario@kokostalk.com';
-    document.getElementById('avatarEmoji').textContent = profile.avatar;
-
-    // Solo badge de nivel (sin racha ni XP en el hero)
+    const heroNameEl = document.getElementById('heroName');
+    const heroEmailEl = document.getElementById('heroEmail');
+    const avatarEmojiEl = document.getElementById('avatarEmoji');
     const levelEl = document.getElementById('levelBadge');
-    if (c === TOTAL) {
-        levelEl.querySelector('span').textContent = 'Maestro LESSA';
-        levelEl.querySelector('i').className = 'fas fa-crown';
-    } else if (c >= 20) {
-        levelEl.querySelector('span').textContent = 'Avanzado';
-        levelEl.querySelector('i').className = 'fas fa-fire';
-    } else if (c >= 10) {
-        levelEl.querySelector('span').textContent = 'Intermedio';
-        levelEl.querySelector('i').className = 'fas fa-leaf';
-    } else {
-        levelEl.querySelector('span').textContent = 'Principiante';
-        levelEl.querySelector('i').className = 'fas fa-seedling';
+
+    if (heroNameEl) heroNameEl.textContent  = profile.name  || 'Mi Cuenta';
+    if (heroEmailEl) heroEmailEl.textContent = profile.email || 'usuario@kokostalk.com';
+    if (avatarEmojiEl) avatarEmojiEl.textContent = profile.avatar;
+
+    if (levelEl) {
+        const textEl = levelEl.querySelector('span');
+        const iconEl = levelEl.querySelector('i');
+        if (textEl && iconEl) {
+            if (c === TOTAL) {
+                textEl.textContent = 'Maestro LESSA';
+                iconEl.className = 'fas fa-crown';
+            } else if (c >= 20) {
+                textEl.textContent = 'Avanzado';
+                iconEl.className = 'fas fa-fire';
+            } else if (c >= 10) {
+                textEl.textContent = 'Intermedio';
+                iconEl.className = 'fas fa-leaf';
+            } else {
+                textEl.textContent = 'Principiante';
+                iconEl.className = 'fas fa-seedling';
+            }
+        }
     }
 }
 

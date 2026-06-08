@@ -1,19 +1,16 @@
+//crear usuarios
 <?php
-require_once "conexion.php";
+$conexion = new mysqli("localhost", "root", "", "usuarios");
+
+if ($conexion->connect_error) {
+    die("Error de conexión: " . $conexion->connect_error);
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $username = trim($_POST['username']);
+    $username = $_POST['username'];
     $password = $_POST['password'];
-    $email = trim($_POST['email']);
-
-    if (empty($username) || empty($password) || empty($email)) {
-        echo "<script>
-            alert('Debes completar todos los campos.');
-            window.location.href='../register.html';
-        </script>";
-        exit();
-    }
+    $email = $_POST['email'];
 
     $check = $conexion->prepare("SELECT id FROM usuarios WHERE username = ?");
     $check->bind_param("s", $username);
@@ -21,34 +18,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $check->store_result();
 
     if ($check->num_rows > 0) {
-        echo "<script>
-            alert('El usuario ya existe.');
-            window.location.href='../register.html';
-        </script>";
-        exit();
+        die("El usuario ya existe");
     }
 
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
+    // guardar usuario
     $stmt = $conexion->prepare("INSERT INTO usuarios (username, password, email) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $username, $passwordHash, $email);
 
     if ($stmt->execute()) {
-        echo "<script>
-            alert('Usuario registrado correctamente. Ahora puedes iniciar sesión.');
-            window.location.href='../login.html';
-        </script>";
+        header("Location: ../login.html");
         exit();
     } else {
-        echo "<script>
-            alert('Error al registrar usuario.');
-            window.location.href='../register.html';
-        </script>";
-        exit();
+        echo "Error al registrar usuario";
     }
 
     $stmt->close();
-    $check->close();
 }
 
 $conexion->close();

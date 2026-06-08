@@ -955,8 +955,84 @@ const lessonsCatalog = {
     ]
 };
 
+function getSavedUserData() {
+    try {
+        const user = JSON.parse(localStorage.getItem('kokosCurrentUser') || 'null');
+        console.log('[Lessons] kokosCurrentUser', user);
+        return user;
+    } catch (e) {
+        console.error('[Lessons] Error parsing kokosCurrentUser', e);
+        return null;
+    }
+}
+
+function getUserProgressKey() {
+    const user = getSavedUserData();
+    const key = user && user.id ? `lessonProgress_${user.id}` : 'lessonProgress_guest';
+    console.log('[Lessons] Using progress key', key);
+    return key;
+}
+
+function getGuestProgress() {
+    const guestSaved = localStorage.getItem('lessonProgress_guest');
+    if (!guestSaved) return [];
+    try {
+        const parsed = JSON.parse(guestSaved);
+        if (Array.isArray(parsed)) return parsed;
+        if (parsed && Array.isArray(parsed.completedLessons)) return parsed.completedLessons;
+    } catch (e) {}
+    return [];
+}
+
+function loadCompletedLessons() {
+    const key = getUserProgressKey();
+    let saved = localStorage.getItem(key);
+    console.log('[Lessons] loadCompletedLessons key', key, 'saved exists?', !!saved);
+
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved) || [];
+            console.log('[Lessons] loaded completed lessons', parsed);
+            return parsed;
+        } catch (e) {
+            console.error('[Lessons] Error parsing lessons progress', e);
+            return [];
+        }
+    }
+
+    if (key !== 'lessonProgress_guest') {
+        const guestLessons = getGuestProgress();
+        console.log('[Lessons] fallback guest progress', guestLessons);
+        if (guestLessons.length) {
+            localStorage.setItem(key, JSON.stringify(guestLessons));
+            return guestLessons;
+        }
+
+        const legacy = localStorage.getItem('completedLessons');
+        console.log('[Lessons] fallback legacy completedLessons', legacy);
+        if (legacy) {
+            try {
+                const legacyLessons = JSON.parse(legacy) || [];
+                console.log('[Lessons] legacy progress parsed', legacyLessons);
+                localStorage.setItem(key, JSON.stringify(legacyLessons));
+                return legacyLessons;
+            } catch (e) {
+                console.error('[Lessons] Error parsing legacy completedLessons', e);
+            }
+        }
+    }
+
+    return [];
+}
+
+function saveCompletedLessons() {
+    const key = getUserProgressKey();
+    console.log('[Lessons] saveCompletedLessons key', key, 'lessons', game.completedLessons);
+    localStorage.setItem(key, JSON.stringify(game.completedLessons));
+}
+
 let game = {
-    completedLessons: JSON.parse(localStorage.getItem('completedLessons')) || [],
+    completedLessons: loadCompletedLessons(),
     currentLessonId: 'abc'
 };
 let currentModalLesson = null;
@@ -1274,11 +1350,8 @@ function completeCurrentLesson() {
     if (!game.completedLessons.includes(currentModalLesson.id)) {
         game.completedLessons.push(currentModalLesson.id);
 
-        // Guardar progreso
-        localStorage.setItem(
-            'completedLessons',
-            JSON.stringify(game.completedLessons)
-        );
+        // Guardar progreso para el usuario actual
+        saveCompletedLessons();
 
         showCompletionMessage();
         showCelebrationEffect();

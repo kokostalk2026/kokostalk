@@ -1,7 +1,12 @@
 <?php
 session_start();
-require_once "conexion.php";
 
+$conexion = new mysqli("localhost", "root", "", "usuarios");
+
+if ($conexion->connect_error) {
+    die("Error de conexión");
+}
+ 
 if (!isset($_SESSION['usuario_id'])) {
     echo "no_session";
     exit();
@@ -10,12 +15,11 @@ if (!isset($_SESSION['usuario_id'])) {
 $usuario_id = $_SESSION['usuario_id'];
 
 if (!isset($_POST['plan'], $_POST['metodo'])) {
-    echo "Datos incompletos";
-    exit();
+    die("Datos incompletos");
 }
 
 $plan = ucfirst(strtolower(trim($_POST['plan'])));
-$metodo = trim($_POST['metodo']);
+$metodo = $_POST['metodo'];
 
 switch ($plan) {
 
@@ -31,14 +35,13 @@ switch ($plan) {
 
     default:
         $plan = "Free";
-        $precio = 0.00;
+        $precio = 0;
         $fecha_fin = NULL;
-        break;
 }
 
 $fecha_inicio = date("Y-m-d");
 
-$sql = "SELECT id FROM suscripciones WHERE usuario_id = ?";
+$sql = "SELECT id FROM suscripciones WHERE usuario_id=?";
 $stmt = $conexion->prepare($sql);
 $stmt->bind_param("i", $usuario_id);
 $stmt->execute();
@@ -48,8 +51,8 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
 
     $sql = "UPDATE suscripciones 
-            SET plan = ?, precio = ?, metodo_pago = ?, fecha_inicio = ?, fecha_fin = ? 
-            WHERE usuario_id = ?";
+            SET plan=?, precio=?, metodo_pago=?, fecha_inicio=?, fecha_fin=? 
+            WHERE usuario_id=?";
 
     $stmt = $conexion->prepare($sql);
 
@@ -66,8 +69,8 @@ if ($result->num_rows > 0) {
 } else {
 
     $sql = "INSERT INTO suscripciones
-            (usuario_id, plan, precio, metodo_pago, fecha_inicio, fecha_fin)
-            VALUES (?, ?, ?, ?, ?, ?)";
+    (usuario_id, plan, precio, metodo_pago, fecha_inicio, fecha_fin)
+    VALUES (?, ?, ?, ?, ?, ?)";
 
     $stmt = $conexion->prepare($sql);
 
@@ -85,7 +88,7 @@ if ($result->num_rows > 0) {
 if ($stmt->execute()) {
     echo "ok";
 } else {
-    echo "Error: " . $stmt->error;
+    echo $stmt->error;
 }
 
 $stmt->close();

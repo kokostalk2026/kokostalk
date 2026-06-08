@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['usuario'])) {
-    header("Location: ../login.html");
+    header("Location: login.html");
     exit();
 }
 ?>
@@ -42,14 +42,17 @@ if (!isset($_SESSION['usuario'])) {
             </div>
         </div>
       <div class="hero-info">
-            <h1><?php echo $_SESSION['usuario']; ?></h1>
-<p><?php echo $_SESSION['email']; ?></p>
+            <h1 id="heroName"><?php echo $_SESSION['usuario']; ?></h1>
+            <p id="heroEmail"><?php echo $_SESSION['email']; ?></p>
             <div class="hero-badges">
-                <!-- Solo badge de nivel, sin racha ni XP -->
+                <button class="hero-badge" id="levelBadge">
+                    <i class="fas fa-seedling"></i>
+                    <span>Principiante</span>
+                </button>
                 <button class="hero-badge" onclick="window.location.href='../php/logout.php'">
-    <i class="fas fa-sign-out-alt"></i>
-    <span>Log Out</span>
-</button>
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Log Out</span>
+                </button>
             </div>
         </div>
     </div>
@@ -273,72 +276,12 @@ if (!isset($_SESSION['usuario'])) {
 <div class="toast" id="toast"></div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-
-    // Obtener lecciones completadas
-    const completedLessons =
-        JSON.parse(localStorage.getItem("completedLessons")) || [];
-
-    const totalLessons = 29;
-    const completed = completedLessons.length;
-    const percent = Math.round((completed / totalLessons) * 100);
-
-    // Estadísticas
-    document.getElementById("statLessons").textContent = completed;
-    document.getElementById("statXP").textContent = completed * 10;
-    document.getElementById("statPct").textContent = percent + "%";
-    document.getElementById("mainRingPct").textContent = percent + "%";
-
-    // Círculo de progreso
-    const ring = document.getElementById("mainRingFill");
-    if (ring) {
-        const circumference = 345.4;
-        ring.style.strokeDashoffset =
-            circumference - (percent / 100) * circumference;
-    }
-
-    // Barras por nivel
-    const basic = Math.min(completed, 9);
-    const inter = Math.max(0, Math.min(completed - 9, 10));
-    const adv = Math.max(0, Math.min(completed - 19, 9));
-
-    document.getElementById("basicCount").textContent = basic + "/9";
-    document.getElementById("interCount").textContent = inter + "/10";
-    document.getElementById("advCount").textContent = adv + "/9";
-
-    document.getElementById("basicBarFill").style.width =
-        (basic / 9 * 100) + "%";
-
-    document.getElementById("interBarFill").style.width =
-        (inter / 10 * 100) + "%";
-
-    document.getElementById("advBarFill").style.width =
-        (adv / 9 * 100) + "%";
-
-    // Mostrar lecciones completadas
-    const allList = document.getElementById("allLessonsList");
-    const doneList = document.getElementById("doneLessonsList");
-
-    if (completedLessons.length === 0) {
-        allList.innerHTML = "<div style='padding:10px'>No lessons completed yet.</div>";
-        doneList.innerHTML = "<div style='padding:10px'>No lessons completed yet.</div>";
-    } else {
-        completedLessons.forEach(lesson => {
-
-            const item1 = document.createElement("div");
-            item1.innerHTML = "✅ " + lesson;
-            item1.style.padding = "10px";
-
-            const item2 = document.createElement("div");
-            item2.innerHTML = "✅ " + lesson;
-            item2.style.padding = "10px";
-
-            allList.appendChild(item1);
-            doneList.appendChild(item2);
-        });
-    }
-
-});
+    try {
+        localStorage.setItem('kokosCurrentUser', JSON.stringify({
+            id: <?php echo intval($_SESSION['usuario_id']); ?>,
+            username: <?php echo json_encode($_SESSION['usuario']); ?>
+        }));
+    } catch (e) {}
 </script>
 
 <script src="../JS/accountglobal.js"></script>
